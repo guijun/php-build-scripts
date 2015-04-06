@@ -27,6 +27,7 @@ BCOMPILER_VERSION="1.0.2"
 
 echo "[PocketMine] PHP compiler for Linux, MacOS and Android"
 DIR="$(pwd)"
+DIR_SRC_PKG=${DIR}/pecl
 date > "$DIR/install.log" 2>&1
 trap "echo \"# \$(eval echo \$BASH_COMMAND)\" >> \"$DIR/install.log\" 2>&1" DEBUG
 uname -a >> "$DIR/install.log" 2>&1
@@ -54,6 +55,19 @@ else
 		echo "error, curl or wget not found"
 	fi
 fi
+
+function getfile()
+{
+	url=$1
+	filename=$2
+	if [ ! -f ${DIR_SRC_PKG}/${filename} ]; then
+		echo "download file ${filename}"
+		download_file ${url}/${filename} > ${DIR_SRC_PKG}/${filename} 
+	fi
+	cat ${DIR_SRC_PKG}/${filename}
+}
+
+
 
 #if type llvm-gcc >/dev/null 2>&1; then
 #	export CC="llvm-gcc"
@@ -349,7 +363,7 @@ set -e
 
 #PHP 5
 echo -n "[PHP] downloading $PHP_VERSION..."
-download_file "http://php.net/distributions/php-$PHP_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+getfile "http://php.net/distributions" "php-$PHP_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 #download_file "http://php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror" | tar -zx >> "$DIR/install.log" 2>&1
 
 mv php-$PHP_VERSION php
@@ -366,7 +380,7 @@ if [ "$COMPILE_FANCY" == "yes" ]; then
 	fi
 	#ncurses
 	echo -n "[ncurses] downloading $NCURSES_VERSION..."
-	download_file "http://ftp.gnu.org/gnu/ncurses/ncurses-$NCURSES_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "http://ftp.gnu.org/gnu/ncurses" "ncurses-$NCURSES_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv ncurses-$NCURSES_VERSION ncurses
 	echo -n " checking..."
 	cd ncurses
@@ -398,7 +412,7 @@ if [ "$COMPILE_FANCY" == "yes" ]; then
 	#readline
 	set +e
 	echo -n "[readline] downloading $READLINE_VERSION..."
-	download_file "http://ftp.gnu.org/gnu/readline/readline-$READLINE_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "http://ftp.gnu.org/gnu/readline" "readline-$READLINE_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv readline-$READLINE_VERSION readline
 	echo -n " checking..."
 	cd readline
@@ -435,7 +449,7 @@ fi
 
 #zlib
 echo -n "[zlib] downloading $ZLIB_VERSION..."
-download_file "https://github.com/madler/zlib/archive/v$ZLIB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+getfile "https://github.com/madler/zlib/archive" "v$ZLIB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 mv zlib-$ZLIB_VERSION zlib
 echo -n " checking..."
 cd zlib
@@ -460,14 +474,18 @@ export ac_cv_func_realloc_0_nonnull=yes
 
 #mcrypt
 echo -n "[mcrypt] downloading $LIBMCRYPT_VERSION..."
-download_file "http://sourceforge.net/projects/mcrypt/files/Libmcrypt/$LIBMCRYPT_VERSION/libmcrypt-$LIBMCRYPT_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+# http://sourceforge.net/projects/mcrypt/files/Libmcrypt/2.5.8/libmcrypt-2.5.8.tar.gz/download
+getfile "http://ncu.dl.sourceforge.net/project/mcrypt/files/Libmcrypt/$LIBMCRYPT_VERSION" "libmcrypt-$LIBMCRYPT_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 mv libmcrypt-$LIBMCRYPT_VERSION libmcrypt
 echo -n " checking..."
 cd libmcrypt
-rm -f config.guess
-download_file "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD" > config.guess
-rm -f config.sub
-download_file "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD" > config.sub
+
+if false; then
+	rm -f config.guess
+	download_file "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD" > config.guess
+	rm -f config.sub
+	download_file "http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD" > config.sub
+fi
 RANLIB=$RANLIB ./configure --prefix="$DIR/bin/php5" \
 --disable-posix-threads \
 --enable-static \
@@ -481,7 +499,7 @@ echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
 echo -n " cleaning..."
 cd ..
-rm -r -f ./libmcrypt
+# rm -r -f ./libmcrypt
 echo " done!"
 
 if [ "$IS_CROSSCOMPILE" == "yes" ]; then
@@ -492,7 +510,7 @@ fi
 
 #GMP
 echo -n "[GMP] downloading $GMP_VERSION..."
-download_file "https://gmplib.org/download/gmp/gmp-$GMP_VERSION.tar.bz2" | tar -jx >> "$DIR/install.log" 2>&1
+getfile "https://gmplib.org/download/gmp" "gmp-$GMP_VERSION.tar.bz2" | tar -jx >> "$DIR/install.log" 2>&1
 mv gmp-$GMP_VERSION_DIR gmp
 echo -n " checking..."
 cd gmp
@@ -521,7 +539,7 @@ if [ "$(uname -s)" != "Darwin" ] || [ "$IS_CROSSCOMPILE" == "yes" ] || [ "$COMPI
 
 	#PolarSSL
 	echo -n "[PolarSSL] downloading $POLARSSL_VERSION..."
-	download_file "https://polarssl.org/download/polarssl-${POLARSSL_VERSION}-gpl.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "https://polarssl.org/download" "polarssl-${POLARSSL_VERSION}-gpl.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv polarssl-${POLARSSL_VERSION} polarssl
 	echo -n " checking..."
 	cd polarssl
@@ -547,7 +565,7 @@ else
 
 	#curl
 	echo -n "[cURL] downloading $CURL_VERSION..."
-	download_file "https://github.com/bagder/curl/archive/$CURL_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "https://github.com/bagder/curl/archive" "$CURL_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv curl-$CURL_VERSION curl
 	echo -n " checking..."
 	cd curl
@@ -609,12 +627,12 @@ fi
 #YAML
 echo -n "[YAML] downloading $YAML_VERSION..."
 if [ "$COMPILE_FOR_ANDROID" == "yes" ]; then
-	download_file "https://github.com/yaml/libyaml/archive/$YAML_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "https://github.com/yaml/libyaml/archive" "$YAML_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv libyaml-$YAML_VERSION yaml
 	cd yaml
 	./bootstrap >> "$DIR/install.log" 2>&1	
 else
-	download_file "http://pyyaml.org/download/libyaml/yaml-$YAML_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "http://pyyaml.org/download/libyaml" "yaml-$YAML_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv yaml-$YAML_VERSION yaml
 	cd yaml
 fi
@@ -638,7 +656,7 @@ echo " done!"
 if [ "$COMPILE_LEVELDB" == "yes" ]; then
 	#LevelDB
 	echo -n "[LevelDB] downloading $LEVELDB_VERSION..."
-	download_file "https://github.com/PocketMine/leveldb/archive/$LEVELDB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "https://github.com/PocketMine/leveldb/archive" "$LEVELDB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	#download_file "https://github.com/Mojang/leveldb-mcpe/archive/$LEVELDB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv leveldb-$LEVELDB_VERSION leveldb
 	echo -n " checking..."
@@ -707,7 +725,7 @@ fi
 if [ "$COMPILE_DEBUG" == "yes" ]; then
 	#profiler
 	echo -n "[PHP profiler] downloading latest..."
-	download_file "https://github.com/krakjoe/profiler/archive/master.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "https://github.com/krakjoe/profiler/archive" "master.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv profiler-master "$DIR/install_data/php/ext/profiler"
 	echo " done!"
 	HAS_PROFILER="--enable-profiler --with-profiler-max-frames=1000"
@@ -717,14 +735,14 @@ fi
 
 #pthreads
 echo -n "[PHP pthreads] downloading $PTHREADS_VERSION..."
-download_file "http://pecl.php.net/get/pthreads-$PTHREADS_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+getfile "http://pecl.php.net/get" "pthreads-$PTHREADS_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 mv pthreads-$PTHREADS_VERSION "$DIR/install_data/php/ext/pthreads"
 echo " done!"
 
 HAS_POCKETMINE=""
 if [ "$HAS_ZEPHIR" == "yes" ]; then
 	echo -n "[C PocketMine extension] downloading $PHP_POCKETMINE_VERSION..."
-	download_file https://github.com/PocketMine/PocketMine-MP-Zephir/archive/$PHP_POCKETMINE_VERSION.tar.gz | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "https://github.com/PocketMine/PocketMine-MP-Zephir/archive" "$PHP_POCKETMINE_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv PocketMine-MP-Zephir-$PHP_POCKETMINE_VERSION/pocketmine/ext "$DIR/install_data/php/ext/pocketmine"
 	rm -r PocketMine-MP-Zephir-$PHP_POCKETMINE_VERSION/
 	HAS_POCKETMINE="--enable-pocketmine"
@@ -739,13 +757,13 @@ fi
 
 #WeakRef
 echo -n "[PHP Weakref] downloading $WEAKREF_VERSION..."
-download_file "http://pecl.php.net/get/Weakref-$WEAKREF_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+getfile "http://pecl.php.net/get" "Weakref-$WEAKREF_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 mv Weakref-$WEAKREF_VERSION "$DIR/install_data/php/ext/weakref"
 echo " done!"
 
 #PHP YAML
 echo -n "[PHP YAML] downloading $PHPYAML_VERSION..."
-download_file "http://pecl.php.net/get/yaml-$PHPYAML_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+getfile "http://pecl.php.net/get" "yaml-$PHPYAML_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 mv yaml-$PHPYAML_VERSION "$DIR/install_data/php/ext/yaml"
 echo " done!"
 
@@ -753,7 +771,7 @@ if [ "$COMPILE_LEVELDB" == "yes" ]; then
 	#PHP LevelDB
 	echo -n "[PHP LevelDB] downloading $PHPLEVELDB_VERSION..."
 	#download_file "http://pecl.php.net/get/leveldb-$PHPLEVELDB_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
-	download_file "https://github.com/PocketMine/php-leveldb/archive/$PHPLEVELDB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "https://github.com/PocketMine/php-leveldb/archive" "$PHPLEVELDB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv php-leveldb-$PHPLEVELDB_VERSION "$DIR/install_data/php/ext/leveldb"
 	echo " done!"
 	HAS_LEVELDB=--with-leveldb="$DIR/bin/php5"
