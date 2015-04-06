@@ -17,7 +17,7 @@ PHP_POCKETMINE_VERSION="0.0.6"
 #UOPZ_VERSION="2.0.4"
 WEAKREF_VERSION="0.2.6"
 PHPYAML_VERSION="1.1.1"
-YAML_VERSION="0.1.4"
+YAML_VERSION="0.1.6"
 #PHPLEVELDB_VERSION="0.1.4"
 PHPLEVELDB_VERSION="d84b2ccbe6b879d93cfa3270ed2cc25d849353d5"
 #LEVELDB_VERSION="1.18"
@@ -474,6 +474,7 @@ export ac_cv_func_realloc_0_nonnull=yes
 
 #mcrypt
 echo -n "[mcrypt] downloading $LIBMCRYPT_VERSION..."
+
 # http://sourceforge.net/projects/mcrypt/files/Libmcrypt/2.5.8/libmcrypt-2.5.8.tar.gz/download
 getfile "http://ncu.dl.sourceforge.net/project/mcrypt/files/Libmcrypt/$LIBMCRYPT_VERSION" "libmcrypt-$LIBMCRYPT_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 mv libmcrypt-$LIBMCRYPT_VERSION libmcrypt
