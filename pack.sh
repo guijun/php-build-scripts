@@ -383,6 +383,8 @@ if false; then
 		sed -i.backup "s/${pathname}/\\$\\(dirname \$0\\)\\/\\.\\./g" ${filename}
 	done
 fi
+rm -rf "$DIR/bin/php5/share/man"
+
 fname=PHP_${PHP_VERSION}_$(uname -m)_$(uname -s)_$(date +"%Y-%m-%d_%H_%M_%S").tar.gz
-tar c bin | gzip > ${fname}
+tar cvf - bin | gzip > ${fname}
 cp ${fname} PHP_${PHP_VERSION}_$(uname -m)_$(uname -s).tar.gz
