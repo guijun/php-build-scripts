@@ -89,10 +89,10 @@ COMPILE_FANCY="no"
 HAS_ZEPHIR="yes"
 IS_CROSSCOMPILE="no"
 IS_WINDOWS="no"
-DO_OPTIMIZE="no"
+DO_OPTIMIZE="yes"
 DO_STATIC="no"
-COMPILE_DEBUG="no"
-COMPILE_LEVELDB="no"
+COMPILE_DEBUG="yes"
+COMPILE_LEVELDB="yes"
 LD_PRELOAD=""
 
 while getopts "::t:oj:srcdlxzff:" OPTION; do
