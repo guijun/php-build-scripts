@@ -1,5 +1,8 @@
 #!/bin/bash
 [ -z "$PHP_VERSION" ] && PHP_VERSION="5.6.7"
+
+CLEAN_INSTALL_DATA=true
+
 ZEND_VM="GOTO"
 
 ZLIB_VERSION="1.2.8"
@@ -98,7 +101,7 @@ COMPILE_FANCY="no"
 HAS_ZEPHIR="yes"
 IS_CROSSCOMPILE="no"
 IS_WINDOWS="no"
-DO_OPTIMIZE="yes"
+DO_OPTIMIZE="no"
 DO_STATIC="no"
 COMPILE_DEBUG="yes"
 COMPILE_LEVELDB="yes"
@@ -323,13 +326,20 @@ if [ "$TOOLCHAIN_PREFIX" != "" ]; then
 		export CPP="$TOOLCHAIN_PREFIX-cpp"
 		export LD="$TOOLCHAIN_PREFIX-ld"
 fi
+#
+#echo "#include <stdio.h>	\
+#int main(int argc,char** argv){ 	\
+#	printf("Hello world\n"); 	\
+#	return 0; 	\
+#}" > test.c
 
-echo "#include <stdio.h> \
-int main(void){ \
-	printf("Hello world\n"); \
-	return 0; \
-}" > test.c
-
+cat << TEST_C_EOF > test.c
+	#include <stdio.h>
+	int main(int argc,char** argv){
+		printf("Hello world\n");
+		return 0;
+	}
+TEST_C_EOF
 
 type $CC >> "$DIR/install.log" 2>&1 || { echo >&2 "[ERROR] Please install \"$CC\""; read -p "Press [Enter] to continue..."; exit 1; }
 
@@ -344,7 +354,7 @@ fi
 
 [ -z "$CONFIGURE_FLAGS" ] && CONFIGURE_FLAGS="";
 
-
+echo "CFLAGS $CFLAGS" >> "$DIR/install.log" 2>&1
 if [ "$mtune" != "none" ]; then
 	$CC -march=$march -mtune=$mtune $CFLAGS -o test test.c >> "$DIR/install.log" 2>&1
 	if [ $? -eq 0 ]; then
@@ -356,6 +366,8 @@ else
 		CFLAGS="-march=$march -fno-gcse $CFLAGS"
 	fi
 fi
+# HOPJOY
+echo "CFLAGS $CFLAGS" >> "$DIR/install.log" 2>&1
 
 rm test.* >> "$DIR/install.log" 2>&1
 rm test >> "$DIR/install.log" 2>&1
@@ -366,14 +378,20 @@ export CFLAGS="-O2 -fPIC $CFLAGS"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="$LDFLAGS"
 export LIBRARY_PATH="$DIR/bin/php5/lib:$DIR/bin/php5/lib:$LIBRARY_PATH"
+if $CLEAN_INSTALL_DATA; then
+	rm -r -f install_data/ >> "$DIR/install.log" 2>&1
+	rm -r -f bin/ >> "$DIR/install.log" 2>&1
+fi
 
-rm -r -f install_data/ >> "$DIR/install.log" 2>&1
-rm -r -f bin/ >> "$DIR/install.log" 2>&1
 mkdir -m 0755 install_data >> "$DIR/install.log" 2>&1
 mkdir -m 0755 bin >> "$DIR/install.log" 2>&1
 mkdir -m 0755 bin/php5 >> "$DIR/install.log" 2>&1
 cd install_data
 set -e
+
+
+
+if $CLEAN_INSTALL_DATA; then # HOPJOY SKIP
 
 #PHP 5
 echo -n "[PHP] downloading $PHP_VERSION..."
@@ -671,7 +689,7 @@ echo " done!"
 if [ "$COMPILE_LEVELDB" == "yes" ]; then
 	#LevelDB
 	echo -n "[LevelDB] downloading $LEVELDB_VERSION..."
-	getfile "https://github.com/PocketMine/leveldb/archive" "$LEVELDB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "https://github.com/PocketMine/leveldb/archive" "$LEVELDB_VERSION.tar.gz" "leveldb-$LEVELDB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	#download_file "https://github.com/Mojang/leveldb-mcpe/archive/$LEVELDB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv leveldb-$LEVELDB_VERSION leveldb
 	echo -n " checking..."
@@ -764,12 +782,14 @@ if [ "$HAS_ZEPHIR" == "yes" ]; then
 	echo " done!"
 fi
 
-#ev
+fi # HOPJOY SKIP
+
+#ev HOPJOY
 echo -n "[PHP ev] downloading $PHPEV_VERSION..."
 getfile "http://pecl.php.net/get" "ev-$PHPEV_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 mv ev-$PHPEV_VERSION "$DIR/install_data/php/ext/ev"
 echo " done!"
-#eio
+#eio HOPJOY
 echo -n "[PHP eio] downloading $PHPEIO_VERSION..."
 getfile "http://pecl.php.net/get" "eio-$PHPEIO_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 mv eio-$PHPEIO_VERSION "$DIR/install_data/php/ext/eio"
@@ -859,6 +879,8 @@ RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --with-yaml="$DIR/bin/php5" \
 --with-mcrypt="$DIR/bin/php5" \
 --with-gmp="$DIR/bin/php5" \
+--with-ev="$DIR/bin/php5" \
+--with-eio="$DIR/bin/php5" \
 $HAVE_NCURSES \
 $HAVE_READLINE \
 $HAS_LEVELDB \
@@ -970,7 +992,9 @@ fi
 echo " done!"
 cd "$DIR"
 echo -n "[INFO] Cleaning up..."
-rm -r -f install_data/ >> "$DIR/install.log" 2>&1
+if $CLEAN_INSTALL_DATA; then
+	rm -r -f install_data/ >> "$DIR/install.log" 2>&1
+fi
 rm -f bin/php5/bin/curl* >> "$DIR/install.log" 2>&1
 rm -f bin/php5/bin/curl-config* >> "$DIR/install.log" 2>&1
 rm -f bin/php5/bin/c_rehash* >> "$DIR/install.log" 2>&1
