@@ -249,8 +249,11 @@ elif [[ "$COMPILE_TARGET" == "linux" ]] || [[ "$COMPILE_TARGET" == "linux32" ]];
 	GMP_ABI="32"
 	echo "[INFO] Compiling for Linux x86"
 elif [ "$COMPILE_TARGET" == "linux64" ]; then
-	[ -z "$march" ] && march=x86-64;
-	[ -z "$mtune" ] && mtune=nocona;
+	#[ -z "$march" ] && march=x86-64;
+	#[ -z "$mtune" ] && mtune=nocona;
+	[ -z "$march" ] && march=core2;
+	[ -z "$mtune" ] && mtune=core2;
+
 	CFLAGS="$CFLAGS -m64"
 	GMP_ABI="64"
 	echo "[INFO] Compiling for Linux x86_64"
@@ -273,8 +276,10 @@ elif [[ "$COMPILE_TARGET" == "mac" ]] || [[ "$COMPILE_TARGET" == "mac32" ]]; the
 	GMP_ABI="32"
 	echo "[INFO] Compiling for Intel MacOS x86"
 elif [ "$COMPILE_TARGET" == "mac64" ]; then
+	#[ -z "$march" ] && march=core2;
+	#[ -z "$mtune" ] && mtune=generic;
 	[ -z "$march" ] && march=core2;
-	[ -z "$mtune" ] && mtune=generic;
+	[ -z "$mtune" ] && mtune=core2;
 	CFLAGS="$CFLAGS -m64 -arch x86_64 -fomit-frame-pointer -mmacosx-version-min=10.5";
 	if [ "$DO_STATIC" == "no" ]; then
 		LDFLAGS="$LDFLAGS -Wl,-rpath,@loader_path/../lib";
