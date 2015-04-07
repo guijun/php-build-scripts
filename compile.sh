@@ -1,6 +1,6 @@
 #!/bin/bash
 [ -z "$PHP_VERSION" ] && PHP_VERSION="5.6.7"
-
+#HOPJOY
 CLEAN_INSTALL_DATA=true
 CLEAN_INSTALL_DATA_END=false
 
@@ -30,7 +30,8 @@ LIBXML_VERSION="2.9.1"
 BCOMPILER_VERSION="1.0.2"
 PHPEV_VERSION="0.2.13"
 PHPEIO_VERSION="1.2.5"
-# optimize
+ZENDOPCACHE_VERSION="7.0.4"
+# HOPJOY optimize 
 march=core2
 mtune=core2
 
@@ -102,9 +103,9 @@ COMPILE_FANCY="no"
 HAS_ZEPHIR="yes"
 IS_CROSSCOMPILE="no"
 IS_WINDOWS="no"
-DO_OPTIMIZE="no"
+DO_OPTIMIZE="yes"
 DO_STATIC="no"
-COMPILE_DEBUG="yes"
+COMPILE_DEBUG="no"
 COMPILE_LEVELDB="yes"
 LD_PRELOAD=""
 
@@ -795,6 +796,16 @@ echo -n "[PHP eio] downloading $PHPEIO_VERSION..."
 getfile "http://pecl.php.net/get" "eio-$PHPEIO_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 mv eio-$PHPEIO_VERSION "$DIR/install_data/php/ext/eio"
 echo " done!"
+
+#ZendOpcache HOPJOY
+echo -n "[PHP ZendOpcache] downloading $ZENDOPCACHE_VERSION..."
+getfile "http://pecl.php.net/get" "zendopcache-$ZENDOPCACHE_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+mv zendopcache-$ZENDOPCACHE_VERSION "$DIR/install_data/php/ext/zendopcache"
+echo " done!"
+
+
+
+
 #uopz
 #echo -n "[PHP uopz] downloading $UOPZ_VERSION..."
 #download_file "http://pecl.php.net/get/uopz-$UOPZ_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
@@ -883,6 +894,9 @@ RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --with-ev="$DIR/bin/php5" \
 --enable-ev \
 --with-eio="$DIR/bin/php5" \
+--enable-eio \
+--with-zendopcache="$DIR/bin/php5" \
+--enable-zendopcache \
 $HAVE_NCURSES \
 $HAVE_READLINE \
 $HAS_LEVELDB \
