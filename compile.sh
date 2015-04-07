@@ -2,6 +2,7 @@
 [ -z "$PHP_VERSION" ] && PHP_VERSION="5.6.7"
 
 CLEAN_INSTALL_DATA=true
+CLEAN_INSTALL_DATA_END=false
 
 ZEND_VM="GOTO"
 
@@ -880,6 +881,7 @@ RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --with-mcrypt="$DIR/bin/php5" \
 --with-gmp="$DIR/bin/php5" \
 --with-ev="$DIR/bin/php5" \
+--enable-ev \
 --with-eio="$DIR/bin/php5" \
 $HAVE_NCURSES \
 $HAVE_READLINE \
@@ -992,7 +994,7 @@ fi
 echo " done!"
 cd "$DIR"
 echo -n "[INFO] Cleaning up..."
-if $CLEAN_INSTALL_DATA; then
+if $CLEAN_INSTALL_DATA_END; then
 	rm -r -f install_data/ >> "$DIR/install.log" 2>&1
 fi
 rm -f bin/php5/bin/curl* >> "$DIR/install.log" 2>&1
