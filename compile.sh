@@ -25,6 +25,11 @@ LEVELDB_VERSION="b633756b51390a9970efde9068f60188ca06a724" #Check MacOS
 LIBXML_VERSION="2.9.1"
 BCOMPILER_VERSION="1.0.2"
 
+# optimize
+march=core2
+mtune=core2
+
+
 echo "[PocketMine] PHP compiler for Linux, MacOS and Android"
 DIR="$(pwd)"
 DIR_SRC_PKG=${DIR}/pecl
@@ -60,11 +65,14 @@ function getfile()
 {
 	url=$1
 	filename=$2
-	if [ ! -f ${DIR_SRC_PKG}/${filename} ]; then
+	localfilename=$3
+	[ -z "$localfilename"; ] && localfilename=$2;
+
+	if [ ! -f ${DIR_SRC_PKG}/${localfilename} ]; then
 		echo "download file ${filename}"
-		download_file ${url}/${filename} > ${DIR_SRC_PKG}/${filename} 
+		download_file ${url}/${filename} > ${DIR_SRC_PKG}/${localfilename} 
 	fi
-	cat ${DIR_SRC_PKG}/${filename}
+	cat ${DIR_SRC_PKG}/${localfilename}
 }
 
 
@@ -731,7 +739,7 @@ fi
 if [ "$COMPILE_DEBUG" == "yes" ]; then
 	#profiler
 	echo -n "[PHP profiler] downloading latest..."
-	getfile "https://github.com/krakjoe/profiler/archive" "master.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "https://github.com/krakjoe/profiler/archive" "master.tar.gz" "profiler-master.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv profiler-master "$DIR/install_data/php/ext/profiler"
 	echo " done!"
 	HAS_PROFILER="--enable-profiler --with-profiler-max-frames=1000"
