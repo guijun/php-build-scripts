@@ -19,12 +19,13 @@ WEAKREF_VERSION="0.2.6"
 PHPYAML_VERSION="1.1.1"
 YAML_VERSION="0.1.6"
 #PHPLEVELDB_VERSION="0.1.4"
-PHPLEVELDB_VERSION="d84b2ccbe6b879d93cfa3270ed2cc25d849353d5"
+PHPLEVELDB_VERSION="5e23373bd140bd6492cf38aed0d7ed30a0e734e2"
 #LEVELDB_VERSION="1.18"
 LEVELDB_VERSION="b633756b51390a9970efde9068f60188ca06a724" #Check MacOS
 LIBXML_VERSION="2.9.1"
 BCOMPILER_VERSION="1.0.2"
-
+PHPEV_VERSION="0.2.13"
+PHPEIO_VERSION="1.2.5"
 # optimize
 march=core2
 mtune=core2
@@ -66,7 +67,7 @@ function getfile()
 	url=$1
 	filename=$2
 	localfilename=$3
-	[ -z "$localfilename"; ] && localfilename=$2;
+	[ -z "$localfilename" ] && localfilename=$2;
 
 	if [ ! -f ${DIR_SRC_PKG}/${localfilename} ]; then
 		echo "download file ${filename}"
@@ -763,6 +764,16 @@ if [ "$HAS_ZEPHIR" == "yes" ]; then
 	echo " done!"
 fi
 
+#ev
+echo -n "[PHP ev] downloading $PHPEV_VERSION..."
+getfile "http://pecl.php.net/get" "ev-$PHPEV_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+mv ev-$PHPEV_VERSION "$DIR/install_data/php/ext/ev"
+echo " done!"
+#eio
+echo -n "[PHP eio] downloading $PHPEIO_VERSION..."
+getfile "http://pecl.php.net/get" "eio-$PHPEIO_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+mv eio-$PHPEIO_VERSION "$DIR/install_data/php/ext/eio"
+echo " done!"
 #uopz
 #echo -n "[PHP uopz] downloading $UOPZ_VERSION..."
 #download_file "http://pecl.php.net/get/uopz-$UOPZ_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
@@ -785,7 +796,7 @@ if [ "$COMPILE_LEVELDB" == "yes" ]; then
 	#PHP LevelDB
 	echo -n "[PHP LevelDB] downloading $PHPLEVELDB_VERSION..."
 	#download_file "http://pecl.php.net/get/leveldb-$PHPLEVELDB_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
-	getfile "https://github.com/PocketMine/php-leveldb/archive" "$PHPLEVELDB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "https://github.com/PocketMine/php-leveldb/archive" "$PHPLEVELDB_VERSION.tar.gz" "php-leveldb-$PHPLEVELDB_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv php-leveldb-$PHPLEVELDB_VERSION "$DIR/install_data/php/ext/leveldb"
 	echo " done!"
 	HAS_LEVELDB=--with-leveldb="$DIR/bin/php5"
