@@ -31,6 +31,7 @@ BCOMPILER_VERSION="1.0.2"
 PHPEV_VERSION="0.2.13"
 PHPEIO_VERSION="1.2.5"
 ZENDOPCACHE_VERSION="7.0.4"
+PHPREDIS_VERSION="2.2.7"
 # HOPJOY optimize 
 march=core2
 mtune=core2
@@ -803,8 +804,11 @@ getfile "http://pecl.php.net/get" "zendopcache-$ZENDOPCACHE_VERSION.tgz" | tar -
 mv zendopcache-$ZENDOPCACHE_VERSION "$DIR/install_data/php/ext/zendopcache"
 echo " done!"
 
-
-
+#redis HOPJOY
+echo -n "[PHP Redis] downloading $PHPREDIS_VERSION..."
+getfile "http://pecl.php.net/get" "redis-$PHPREDIS_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+mv redis-$PHPREDIS_VERSION "$DIR/install_data/php/ext/redis"
+echo " done!"
 
 #uopz
 #echo -n "[PHP uopz] downloading $UOPZ_VERSION..."
@@ -897,6 +901,8 @@ RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --enable-eio \
 --with-zendopcache="$DIR/bin/php5" \
 --enable-zendopcache \
+--with-redis="$DIR/bin/php5" \
+--enable-redis \
 $HAVE_NCURSES \
 $HAVE_READLINE \
 $HAS_LEVELDB \
