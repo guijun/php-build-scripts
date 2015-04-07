@@ -372,4 +372,16 @@ fi
 # HOPJOY
 echo "CFLAGS $CFLAGS" >> "$DIR/install.log" 2>&1
 
+function escape_str()
+{
+	echo $(echo "$1" | sed "s/\//\\\\\//g")
+}
+
+if false; then
+	pathname=$(escape_str "$DIR/bin/php5")
+	for filename in "$DIR/bin/php5/bin/phpize" "$DIR/bin/php5/bin/php-config"; do
+		sed -i.backup "s/${pathname}/\\$\\(dirname \$0\\)\\/\\.\\./g" ${filename}
+	done
+fi
 tar c bin | gzip > PHP_${PHP_VERSION}_$(uname -m)_$(uname -s)_$(date +"%Y-%m-%d_%H_%M_%S").tar.gz
+cp PHP_${PHP_VERSION}_$(uname -m)_$(uname -s)_$(date +"%Y-%m-%d_%H_%M_%S").tar.gz PHP_${PHP_VERSION}_$(uname -m)_$(uname -s).tar.gz
