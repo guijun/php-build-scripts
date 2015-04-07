@@ -799,17 +799,19 @@ mv eio-$PHPEIO_VERSION "$DIR/install_data/php/ext/eio"
 echo " done!"
 
 #ZendOpcache HOPJOY
-echo -n "[PHP ZendOpcache] downloading $ZENDOPCACHE_VERSION..."
-getfile "http://pecl.php.net/get" "zendopcache-$ZENDOPCACHE_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
-mv zendopcache-$ZENDOPCACHE_VERSION "$DIR/install_data/php/ext/zendopcache"
-echo " done!"
-
+if true; then
+	echo -n "[PHP ZendOpcache] downloading $ZENDOPCACHE_VERSION..."
+	getfile "http://pecl.php.net/get" "zendopcache-$ZENDOPCACHE_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+	mv zendopcache-$ZENDOPCACHE_VERSION "$DIR/install_data/php/ext/zendopcache"
+	echo " done!"
+fi
 #redis HOPJOY
-echo -n "[PHP Redis] downloading $PHPREDIS_VERSION..."
-getfile "http://pecl.php.net/get" "redis-$PHPREDIS_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
-mv redis-$PHPREDIS_VERSION "$DIR/install_data/php/ext/redis"
-echo " done!"
-
+if false; then
+	echo -n "[PHP Redis] downloading $PHPREDIS_VERSION..."
+	getfile "http://pecl.php.net/get" "redis-$PHPREDIS_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
+	mv redis-$PHPREDIS_VERSION "$DIR/install_data/php/ext/redis"
+	echo " done!"
+fi
 #uopz
 #echo -n "[PHP uopz] downloading $UOPZ_VERSION..."
 #download_file "http://pecl.php.net/get/uopz-$UOPZ_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
@@ -901,8 +903,6 @@ RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --enable-eio \
 --with-zendopcache="$DIR/bin/php5" \
 --enable-zendopcache \
---with-redis="$DIR/bin/php5" \
---enable-redis \
 $HAVE_NCURSES \
 $HAVE_READLINE \
 $HAS_LEVELDB \
@@ -957,7 +957,8 @@ if [[ "$COMPILE_LEVELDB" == "yes" ]] && [[ "$DO_STATIC" == "yes" ]]; then
 	sed -i=".backup" 's/--mode=link $(CC)/--mode=link $(CXX)/g' Makefile
 fi
 
-make -j $THREADS >> "$DIR/install.log" 2>&1
+#make -j $THREADS >> "$DIR/install.log" 2>&1
+make -j 8 >> "$DIR/install.log" 2>&1
 echo -n " installing..."
 make install >> "$DIR/install.log" 2>&1
 
