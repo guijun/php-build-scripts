@@ -9,6 +9,7 @@ ZEND_VM="GOTO"
 XDEBUG_VERSION="2.3.2"
 ZENDOPCACHE_VERSION="7.0.4"
 PHPREDIS_VERSION="2.2.7"
+SWOOLE_VERSION="1.7.14"
 # HOPJOY optimize 
 march=core2
 mtune=core2
@@ -403,6 +404,15 @@ if true; then
 	rm -rf "$DIR/install_data/php/ext/xdebug"
 	mv xdebug-$XDEBUG_VERSION "$DIR/install_data/php/ext/xdebug"
 	buildExt "$DIR/install_data/php/ext/xdebug"
+	echo " done!"
+fi
+
+if true; then
+	echo -n "[PHP Swoole] downloading $SWOOLE_VERSION..."
+	getfile "http://pecl.php.net/get" "swoole-$SWOOLE_VERSION.tgz" | tar -zx >> "$DIR/install_extensions.log" 2>&1
+	rm -rf "$DIR/install_data/php/ext/swoole"
+	mv swoole-$SWOOLE_VERSION "$DIR/install_data/php/ext/swoole"
+	buildExt "$DIR/install_data/php/ext/swoole"
 	echo " done!"
 fi
 
