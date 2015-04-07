@@ -356,6 +356,10 @@ export CXXFLAGS="$CFLAGS"
 export LDFLAGS="$LDFLAGS"
 export LIBRARY_PATH="$DIR/bin/php5/lib:$DIR/bin/php5/lib:$LIBRARY_PATH"
 
+mkdir -m 0755 install_data >> "$DIR/install.log" 2>&1
+mkdir -m 0755 bin >> "$DIR/install.log" 2>&1
+mkdir -m 0755 bin/php5 >> "$DIR/install.log" 2>&1
+cd install_data
 set -e
 
 function buildExt()
@@ -363,31 +367,37 @@ function buildExt()
 	ext=$1
 	pushd $ext
 	$DIR/bin/php5/bin/phpize
-	./configure
+	./configure --with-php-config=$DIR/bin/php5/bin/php-config
 	make
 	make install
+	popd
 }
 
 #ZendOpcache HOPJOY
 if false; then
 	echo -n "[PHP ZendOpcache] downloading $ZENDOPCACHE_VERSION..."
 	getfile "http://pecl.php.net/get" "zendopcache-$ZENDOPCACHE_VERSION.tgz" | tar -zx >> "$DIR/install_extensions.log" 2>&1
+	rm -rf "$DIR/install_data/php/ext/zendopcache"
 	mv zendopcache-$ZENDOPCACHE_VERSION "$DIR/install_data/php/ext/zendopcache"
 	buildExt "$DIR/install_data/php/ext/zendopcache"
 	echo " done!"
 fi
 #redis HOPJOY
-if false; then
+if true; then
 	echo -n "[PHP Redis] downloading $PHPREDIS_VERSION..."
 	getfile "http://pecl.php.net/get" "redis-$PHPREDIS_VERSION.tgz" | tar -zx >> "$DIR/install_extensions.log" 2>&1
+	rm -rf "$DIR/install_data/php/ext/redis"
 	mv redis-$PHPREDIS_VERSION "$DIR/install_data/php/ext/redis"
+	buildExt "$DIR/install_data/php/ext/redis"
 	echo " done!"
 fi
 
-if false; then
+if true; then
 	echo -n "[PHP Xdebug] downloading $XDEBUG_VERSION..."
 	getfile "http://pecl.php.net/get" "xdebug-$XDEBUG_VERSION.tgz" | tar -zx >> "$DIR/install_extensions.log" 2>&1
+	rm -rf "$DIR/install_data/php/ext/xdebug"
 	mv xdebug-$XDEBUG_VERSION "$DIR/install_data/php/ext/xdebug"
+	buildExt "$DIR/install_data/php/ext/xdebug"
 	echo " done!"
 fi
 

@@ -799,7 +799,7 @@ mv eio-$PHPEIO_VERSION "$DIR/install_data/php/ext/eio"
 echo " done!"
 
 #ZendOpcache HOPJOY
-if true; then
+if false; then
 	echo -n "[PHP ZendOpcache] downloading $ZENDOPCACHE_VERSION..."
 	getfile "http://pecl.php.net/get" "zendopcache-$ZENDOPCACHE_VERSION.tgz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv zendopcache-$ZENDOPCACHE_VERSION "$DIR/install_data/php/ext/zendopcache"
@@ -889,6 +889,9 @@ if [[ "$(uname -s)" == "Darwin" ]] && [[ "$IS_CROSSCOMPILE" != "yes" ]]; then
 	export EXTRA_CFLAGS=-lresolv
 fi
 
+
+# --disable-session \
+
 RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --exec-prefix="$DIR/bin/php5" \
 --with-curl="$HAVE_CURL" \
@@ -901,8 +904,6 @@ RANLIB=$RANLIB ./configure $PHP_OPTIMIZATION --prefix="$DIR/bin/php5" \
 --enable-ev \
 --with-eio="$DIR/bin/php5" \
 --enable-eio \
---with-zendopcache="$DIR/bin/php5" \
---enable-zendopcache \
 $HAVE_NCURSES \
 $HAVE_READLINE \
 $HAS_LEVELDB \
@@ -921,7 +922,6 @@ $HAS_PROFILER \
 --disable-xmlreader \
 --disable-xmlwriter \
 --disable-cgi \
---disable-session \
 --disable-debug \
 --disable-pdo \
 --without-pear \
@@ -944,7 +944,7 @@ $HAVE_MYSQLI \
 --enable-zip \
 --enable-ftp \
 --with-zend-vm=$ZEND_VM \
---enable-opcache=no \
+--enable-opcache=yes \
 $CONFIGURE_FLAGS >> "$DIR/install.log" 2>&1
 echo -n " compiling..."
 if [ "$COMPILE_FOR_ANDROID" == "yes" ]; then
