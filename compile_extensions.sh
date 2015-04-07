@@ -151,6 +151,11 @@ while getopts "::t:oj:srcdlxzff:" OPTION; do
 	esac
 done
 
+# HOPJOY Macos still wrong.
+if [ "$(uname -s)" == "Darwin" ]; then
+	DO_STATIC="yes"
+fi
+
 GMP_ABI=""
 TOOLCHAIN_PREFIX=""
 
