@@ -989,7 +989,8 @@ fi
 echo -n " generating php.ini..."
 trap - DEBUG
 TIMEZONE=$(date +%Z)
-echo "date.timezone=$TIMEZONE" > "$DIR/bin/php5/bin/php.ini"
+echo "extension_dir=../lib/php/extensions/no-debug-zts-20131226" > "$DIR/bin/php5/bin/php.ini"
+echo "date.timezone=$TIMEZONE" >> "$DIR/bin/php5/bin/php.ini"
 echo "short_open_tag=0" >> "$DIR/bin/php5/bin/php.ini"
 echo "asp_tags=0" >> "$DIR/bin/php5/bin/php.ini"
 echo "phar.readonly=0" >> "$DIR/bin/php5/bin/php.ini"
