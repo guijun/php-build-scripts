@@ -1,5 +1,5 @@
 #!/bin/bash
-[ -z "$PHP_VERSION" ] && PHP_VERSION="5.6.7"
+[ -z "$PHP_VERSION" ] && PHP_VERSION="5.6.4"
 #HOPJOY
 CLEAN_INSTALL_DATA=true
 CLEAN_INSTALL_DATA_END=false
@@ -17,7 +17,7 @@ NCURSES_VERSION="5.9"
 PHPNCURSES_VERSION="1.0.2"
 PTHREADS_VERSION="2.0.10"
 XDEBUG_VERSION="2.2.6"
-PHP_POCKETMINE_VERSION="0.0.6"
+PHP_POCKETMINE_VERSION="0.0.4.1"
 #UOPZ_VERSION="2.0.4"
 WEAKREF_VERSION="0.2.6"
 PHPYAML_VERSION="1.1.1"
@@ -784,7 +784,7 @@ echo " done!"
 HAS_POCKETMINE=""
 if [ "$HAS_ZEPHIR" == "yes" ]; then
 	echo -n "[C PocketMine extension] downloading $PHP_POCKETMINE_VERSION..."
-	getfile "https://github.com/PocketMine/PocketMine-MP-Zephir/archive" "$PHP_POCKETMINE_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+	getfile "https://github.com/guijun/PocketMine-MP-Zephir/archive" "$PHP_POCKETMINE_VERSION.tar.gz" "PocketMine-MP-Zephir-$PHP_POCKETMINE_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
 	mv PocketMine-MP-Zephir-$PHP_POCKETMINE_VERSION/pocketmine/ext "$DIR/install_data/php/ext/pocketmine"
 	rm -r PocketMine-MP-Zephir-$PHP_POCKETMINE_VERSION/
 	HAS_POCKETMINE="--enable-pocketmine"

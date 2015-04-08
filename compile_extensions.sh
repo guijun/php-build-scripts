@@ -1,5 +1,5 @@
 #!/bin/bash
-[ -z "$PHP_VERSION" ] && PHP_VERSION="5.6.7"
+[ -z "$PHP_VERSION" ] && PHP_VERSION="5.6.4"
 #HOPJOY
 CLEAN_INSTALL_DATA=true
 CLEAN_INSTALL_DATA_END=false
@@ -10,6 +10,7 @@ XDEBUG_VERSION="2.3.2"
 ZENDOPCACHE_VERSION="7.0.4"
 PHPREDIS_VERSION="2.2.7"
 SWOOLE_VERSION="1.7.14"
+PHP_POCKETMINE_VERSION="0.0.4.1"
 # HOPJOY optimize 
 march=core2
 mtune=core2
@@ -415,6 +416,18 @@ if true; then
 	buildExt "$DIR/install_data/php/ext/swoole"
 	echo " done!"
 fi
+
+
+if true; then
+	echo -n "[C PocketMine extension] downloading $PHP_POCKETMINE_VERSION..."
+		getfile "https://github.com/guijun/PocketMine-MP-Zephir/archive" "$PHP_POCKETMINE_VERSION.tar.gz" "PocketMine-MP-Zephir-$PHP_POCKETMINE_VERSION.tar.gz" | tar -zx >> "$DIR/install.log" 2>&1
+		rm -rf "$DIR/install_data/php/ext/pocketmine"
+		mv PocketMine-MP-Zephir-$PHP_POCKETMINE_VERSION/pocketmine/ext "$DIR/install_data/php/ext/pocketmine"
+		rm -r PocketMine-MP-Zephir-$PHP_POCKETMINE_VERSION/
+	buildExt "$DIR/install_data/php/ext/pocketmine"
+	echo " done!"
+fi
+
 
 if [[ "$(uname -s)" == "Darwin" ]] && [[ "$IS_CROSSCOMPILE" != "yes" ]]; then
 	set +e	
